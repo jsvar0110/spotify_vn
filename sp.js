@@ -131,7 +131,7 @@ async function displayAlbums() {
 async function main() {
 
 
-    await getSongs("songs/ncs")
+    await getSongs("songs/Pritam")
     playMusic(songs[0], true)
 
     //display all the albums on th page
