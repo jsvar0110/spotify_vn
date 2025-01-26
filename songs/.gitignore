@@ -1,3 +1,0 @@
-# Allow .jpg and .json files inside the songs folder
-!songs/**/*.jpg
-!songs/**/*.json
