@@ -1,0 +1,3 @@
+# Ignore .jpg and .json files inside the 'songs' subfolders
+songs/**/*.jpg
+songs/**/*.json
