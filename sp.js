@@ -211,6 +211,9 @@ async function main() {
         }
     })
 
-
+    if (!currFolder) {
+        console.error("Error: currFolder is undefined");
+      }
+      
 }
 main()
