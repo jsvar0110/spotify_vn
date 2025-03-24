@@ -22,52 +22,58 @@ function secondsToMinutesSeconds(seconds) {
 
 async function getSongs(folder) {
     currFolder = folder;
-    let a = await fetch(`/${folder}/`)
-    let response = await a.text();
-    let div = document.createElement("div");
-    div.innerHTML = response;
-    let as = div.getElementsByTagName("a");
-    songs = []
-    for (let index = 0; index < as.length; index++) {
-        const element = as[index];
-        if (element.href.endsWith(".mp3")) {
-            songs.push(element.href.split(`/${folder}/`)[1])
+    console.log("Fetching songs from folder:", folder);
+    try {
+        let a = await fetch(folder)
+        let response = await a.text();
+        console.log("Response received:", response);
+        let div = document.createElement("div");
+        div.innerHTML = response;
+        let as = div.getElementsByTagName("a");
+        songs = []
+        console.log("Found links:", as.length);
+        for (let index = 0; index < as.length; index++) {
+            const element = as[index];
+            console.log("Link:", element.href);
+            if (element.href.endsWith(".mp3")) {
+                songs.push(element.href.split(folder)[1])
+            }
         }
+        console.log("Found songs:", songs);
 
-    }
+        let songUL = document.querySelector(".songlist").getElementsByTagName("ul")[0]
+        console.log("Song list element:", songUL);
 
-    
+        songUL.innerHTML = ""
 
-    let songUL = document.querySelector(".songlist").getElementsByTagName("ul")[0]
+        for (const song of songs) {
+            songUL.innerHTML = songUL.innerHTML + `<li>  <img class="invert" src="assets/music.svg" alt="">
+                  <div class="info">
+                    <div>  ${song.replaceAll("%20", " ")}</div>
+                    <div>VARAD</div>
+                  </div>
+                  <div class="playnow">     
+                    <span>Play Now</span>           
+                    <img class="invert" src="assets/play.svg" alt="">
+                  </div>
+                                              </li>`;
+        }
+        console.log("Updated song list HTML:", songUL.innerHTML);
 
-    songUL.innerHTML = ""
-
-    for (const song of songs) {
-        songUL.innerHTML = songUL.innerHTML + `<li>  <img class="invert" src="assets/music.svg" alt="">
-              <div class="info">
-                <div>  ${song.replaceAll("%20", " ")}</div>
-                <div>VARAD</div>
-              </div>
-              <div class="playnow">     
-                <span>Play Now</span>           
-                <img class="invert" src="assets/play.svg" alt="">
-              </div>
-                                          </li>`;
-    }
-
-    Array.from(document.querySelector(".songlist").getElementsByTagName("li")).forEach(e => {
-        e.addEventListener("click", element => {
-            console.log(e.querySelector(".info").firstElementChild.innerHTML)
-            playMusic(e.querySelector(".info").firstElementChild.innerHTML.trim())
+        Array.from(document.querySelector(".songlist").getElementsByTagName("li")).forEach(e => {
+            e.addEventListener("click", element => {
+                console.log("Song clicked:", e.querySelector(".info").firstElementChild.innerHTML)
+                playMusic(e.querySelector(".info").firstElementChild.innerHTML.trim())
+            })
         })
-
-    })
+    } catch (error) {
+        console.error("Error fetching songs:", error);
+    }
     return songs
 }
 
-
 const playMusic = (track, pause = false) => {
-    currentSong.src = `/${currFolder}/` + track
+    currentSong.src = currFolder + track
     if (!pause) {
         currentSong.play()
         play.src = "assets/pause.svg"
@@ -78,7 +84,7 @@ const playMusic = (track, pause = false) => {
 
 async function displayAlbums() {
     console.log("displaying albums")
-    let a = await fetch(`/songs/`)
+    let a = await fetch(`/public/songs/`)
     let response = await a.text();
     let div = document.createElement("div");
     div.innerHTML = response;
@@ -89,10 +95,10 @@ async function displayAlbums() {
     for (let index = 0; index < array.length; index++) {
         const e = array[index];
 
-        if (e.href.includes("/songs/") && !e.href.includes(".htaccess") ) {
+        if (e.href.includes("/public/songs/") && !e.href.includes(".htaccess") ) {
             let folder = e.href.split("/").slice(-2)[1]
 
-            let a = await fetch(`/songs/${folder}/info.json`)
+            let a = await fetch(`/public/songs/${folder}/info.json`)
             let response = await a.json();
             console.log(response)
             cardContainer.innerHTML = cardContainer.innerHTML + `<div data-folder="${folder}" class="card ">
@@ -108,34 +114,37 @@ async function displayAlbums() {
                   </svg>
                   
                   </div>
-            <img src="/songs/${folder}/cover.jpg" alt="">
+            <img src="/public/songs/${folder}/cover.jpg" alt="">
             <h2>${response.title}</h2>
             <p>${response.description}</p>
             </div>`
         }
     }
 
-
     Array.from(document.getElementsByClassName("card")).forEach(e => {
         console.log(e)
         e.addEventListener("click", async item => {
             console.log("fetching songs")
-            songs = await getSongs(`songs/${item.currentTarget.dataset.folder}`)
+            songs = await getSongs(`/public/songs/${item.currentTarget.dataset.folder}`)
             playMusic(songs[0])
         })
     })
-
 }
 
-
 async function main() {
+    try {
+        console.log("Starting main function");
+        await getSongs("/public/songs/Pritam")
+        console.log("Songs loaded:", songs);
+        playMusic(songs[0], true)
+        console.log("Initial song loaded");
 
-
-    await getSongs("songs/Pritam")
-    playMusic(songs[0], true)
-
-    //display all the albums on th page
-    displayAlbums()
+        //display all the albums on th page
+        displayAlbums()
+        console.log("Albums displayed");
+    } catch (error) {
+        console.error("Error in main function:", error);
+    }
 
     play.addEventListener("click", () => {
 
