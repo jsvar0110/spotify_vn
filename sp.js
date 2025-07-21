@@ -134,7 +134,7 @@ async function displayAlbums() {
 async function main() {
     try {
         console.log("Starting main function");
-        await getSongs("/songs/Pritam")
+        await getSongs(`/songs/${folder}`)
         console.log("Songs loaded:", songs);
         playMusic(songs[0], true)
         console.log("Initial song loaded");
