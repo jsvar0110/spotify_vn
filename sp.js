@@ -84,7 +84,7 @@ const playMusic = (track, pause = false) => {
 
 async function displayAlbums() {
     console.log("displaying albums")
-    let a = await fetch(`/public/songs/`)
+    let a = await fetch(`/songs/`)
     let response = await a.text();
     let div = document.createElement("div");
     div.innerHTML = response;
@@ -95,10 +95,10 @@ async function displayAlbums() {
     for (let index = 0; index < array.length; index++) {
         const e = array[index];
 
-        if (e.href.includes("/public/songs/") && !e.href.includes(".htaccess") ) {
+        if (e.href.includes("/songs/") && !e.href.includes(".htaccess") ) {
             let folder = e.href.split("/").slice(-2)[1]
 
-            let a = await fetch(`/public/songs/${folder}/info.json`)
+            let a = await fetch(`/songs/${folder}/info.json`)
             let response = await a.json();
             console.log(response)
             cardContainer.innerHTML = cardContainer.innerHTML + `<div data-folder="${folder}" class="card ">
@@ -114,7 +114,7 @@ async function displayAlbums() {
                   </svg>
                   
                   </div>
-            <img src="/public/songs/${folder}/cover.jpg" alt="">
+            <img src="/songs/${folder}/cover.jpg" alt="">
             <h2>${response.title}</h2>
             <p>${response.description}</p>
             </div>`
@@ -125,7 +125,7 @@ async function displayAlbums() {
         console.log(e)
         e.addEventListener("click", async item => {
             console.log("fetching songs")
-            songs = await getSongs(`/public/songs/${item.currentTarget.dataset.folder}`)
+            songs = await getSongs(`/songs/${item.currentTarget.dataset.folder}`)
             playMusic(songs[0])
         })
     })
@@ -134,7 +134,7 @@ async function displayAlbums() {
 async function main() {
     try {
         console.log("Starting main function");
-        await getSongs("/public/songs/Pritam")
+        await getSongs("/songs/Pritam")
         console.log("Songs loaded:", songs);
         playMusic(songs[0], true)
         console.log("Initial song loaded");
