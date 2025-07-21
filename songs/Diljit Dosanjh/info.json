@@ -1,4 +1,9 @@
 {
-    "title":"Diljit Dosanjh",
-    "description":"HIts only for you"
+  "songs": [
+     "Tum Se Hi.mp3",
+    "Hawayein.mp3"
+  ],
+  "title": "Pritam",
+  "description": "Bollywood Hits",
+  "cover": "cover.jpg"
 }
